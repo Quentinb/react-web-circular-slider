@@ -4,7 +4,7 @@
 # react-web-circular-slider
 
 ReactJS component for creating circular slider.
-This is a rework of the [original React-Native project](https://github.com/bartgryszko/react-native-circular-slider)to support ReactJS.
+This is a rework of the [original React-Native project](https://github.com/bartgryszko/react-native-circular-slider) to support ReactJS.
 
 ## Example app – inspired by Apple's Bedtime :alarm_clock:
 
