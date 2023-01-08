@@ -10,7 +10,15 @@ This is a rework of the [original React-Native project](https://github.com/bartg
 
 (It's just an example what you can achieve – with this package you can create any circular slider)
 
+### Original React Native Demo
+
 ![image](screenshot.gif)
+
+### Side By sude with Web Control
+
+(Appologies - the video does not do the original justice - the recording slowed it down due to the gif)
+
+![image](compare.gif)
 
 ## Installation
 
@@ -72,6 +80,16 @@ You can configure the slider by passing of the following props:
 -   **onEndUpdate({ angleLength, endTime, durationMinutes })** - when the end slider is moved. onEndUpdate(data) is triggered, where data is an object of new values of angleLength, endTime({h, m}) and duration [int] value expressed in total minutes.
 
 ## Working example app
+
+There is an example in the `example` directory. To get it running, simply run:
+
+    ```
+    npm install
+    npm start
+    ```
+
+and you shold be able to access the example on the default
+`localhost:3000`
 
 ## Author
 
