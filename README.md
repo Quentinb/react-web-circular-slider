@@ -83,10 +83,10 @@ You can configure the slider by passing of the following props:
 
 There is an example in the `example` directory. To get it running, simply run:
 
-    ```
-    npm install
-    npm start
-    ```
+```console
+npm install
+npm start
+```
 
 and you shold be able to access the example on the default
 `localhost:3000`
