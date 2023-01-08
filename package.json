@@ -1,0 +1,44 @@
+{
+	"name": "react-web-circular-slider",
+	"version": "2.0.0",
+	"description": "ReactJS component for creating circular slider",
+	"main": "src/CircularSlider.js",
+	"repository": {
+		"type": "git",
+		"url": "git+ssh://github.com/Quentinb/react-web-circular-slider.git"
+	},
+	"keywords": [
+		"react",
+		"react-native",
+		"slider",
+		"chart",
+		"svg",
+		"bedtime",
+		"circular",
+		"circle",
+		"round",
+		"time",
+		"timer",
+		"react-component"
+	],
+	"author": {
+		"name": "Quentin Barnard (original: Bart Gryszko)",
+		"email": "react-web-circular-slider@mrq.co.za"
+	},
+	"files": [
+		"src",
+		"README.md"
+	],
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/Quentinb/react-web-circular-slider/issues"
+	},
+	"homepage": "https://github.com/Quentinb/react-web-circular-slider",
+	"dependencies": {
+		"d3-interpolate": "^1.1.2",
+		"lodash.range": "^3.2.0"
+	},
+	"peerDependencies": {
+		"react": ">=15.4.0"
+	}
+}
