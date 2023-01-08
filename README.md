@@ -14,7 +14,7 @@ This is a rework of the [original React-Native project](https://github.com/bartg
 
 ![image](screenshot.gif)
 
-### Side By sude with Web Control
+### Side By Side with Web Control
 
 (Appologies - the video does not do the original justice - the recording slowed it down due to the gif)
 
