@@ -1,5 +1,5 @@
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg)]()
-[![Version](https://img.shields.io/npm/v/react-native-circular-slider.svg)](https://www.npmjs.com/package/react-web-circular-slider)
+[![Version](https://img.shields.io/npm/v/react-web-circular-slider.svg)](https://www.npmjs.com/package/react-web-circular-slider)
 
 # react-web-circular-slider
 
