@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { CircularSlider } from './CircularSlider';
+import { CircularSlider } from 'react-web-circular-slider';
 
 function padTime(time) {
 	if (`${time}`.length < 2) {
