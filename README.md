@@ -16,7 +16,7 @@ This is a rework of the [original React-Native project](https://github.com/bartg
 
 ### Side By Side with Web Control
 
-(Appologies - the video does not do the original justice - the recording slowed it down due to the gif)
+(Apologies - the video does not do the original justice - the recording slowed it down due to the gif)
 
 ![image](compare.gif)
 
@@ -48,9 +48,11 @@ Use as follows:
   radius={145}
   gradientColorFrom="#ff9800"
   gradientColorTo="#ffcf00"
-  showClockFace=True,
+  showClockFace=True
   clockFaceColor="#9d9d9d"
   bgCircleColor="#171717"
+  initialStartTime="18:00"
+  initialEndTime="16:00"
   stopIcon={<G><Path .../></G>}
   startIcon={<G><Path .../></G>}
 />
@@ -72,6 +74,8 @@ You can configure the slider by passing of the following props:
 -   **bgCircleColor (optional)** - color of the circle under the slider (pathway for a slider)
 -   **stopIcon (optional)** - SVG Path for a stop icon (see the example)
 -   **startIcon (optional)** - SVG Path for a start icon (see the example)
+-   **initialStartTime** - The initial start time that should be set once the slider is loaded
+-   **initialEndTime** - The initial end time that should be set once the slider is loaded
 
 ## Change events
 
