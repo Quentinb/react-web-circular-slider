@@ -210,8 +210,11 @@ export const CircularSlider = (props) => {
 	} = props;
 
 	useEffect(() => {
-		getInitialAngles(initialStartTime, initialEndTime);
+		const { startAngle, angleLength } = getInitialAngles(initialStartTime, initialEndTime);
 		setInitialValues();
+
+		setStartAngle(startAngle);
+		setAngleLength(angleLength);
 	}, [initialStartTime, initialEndTime]);
 
 	const [circleCenterX, setCenterX] = useState(false);
