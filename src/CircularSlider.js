@@ -27,16 +27,39 @@ const BEDTIME_ICON = (
 	</g>
 );
 
+/**
+ * Calculates the number of minutes from a given angle on a clock face
+ *
+ * @param {number} angle - The angle in radians
+ * @returns {number} - The number of minutes from the angle
+ */
 const calculateMinutesFromAngle = (angle) => {
-	return Math.round(angle / ((2 * Math.PI) / (12 * 12))) * 5;
+	// Calculate the angle per minute by dividing the total angle around the clock face (2 * Math.PI) by the number of minutes in a day (24 * 60)
+	const anglePerMinute = (2 * Math.PI) / (24 * 60);
+
+	// Calculate the number of minutes by dividing the angle by the angle per minute and rounding to the nearest minute
+	const minutes = Math.round(angle / anglePerMinute);
+
+	// Return the minutes rounded down to the nearest 5 minutes
+	return Math.floor(minutes / 5) * 5;
 };
 
+/**
+ * Calculates the time (hour and minute) from a given angle on a clock face
+ *
+ * @param {number} angle - The angle in radians
+ * @returns {object} - An object containing the hour and minute
+ */
 const calculateTimeFromAngle = (angle) => {
+	// Calculate the number of minutes from the angle
 	const minutes = calculateMinutesFromAngle(angle);
+
+	// Calculate the hour and minute from the minutes
 	const h = Math.floor(minutes / 60);
 	const m = minutes - h * 60;
 
-	return { h: h === 0 ? 12 : h, m };
+	// Return an object with the hour and minute formatted as strings with leading zeros if necessary
+	return { h: h === 0 ? '00' : (h < 10 ? '0' + h : h.toString()), m: m < 10 ? '0' + m : m.toString() };
 };
 
 const calculateArcColor = (index0, segments, gradientColorFrom, gradientColorTo) => {
@@ -48,22 +71,42 @@ const calculateArcColor = (index0, segments, gradientColorFrom, gradientColorTo)
 	};
 };
 
+/**
+ * Calculates the start and end points of an arc segment of a circle.
+ * @param {number} index0 - The index of the current segment, starting from 0.
+ * @param {number} segments - The total number of segments that make up the circle.
+ * @param {number} radius - The radius of the circle.
+ * @param {number} startAngle0 - The starting angle of the circle in radians (default: 0).
+ * @param {number} angleLength0 - The length of the circle in radians (default: 2 * Math.PI).
+ * @returns {Object} - An object with the start and end points of the arc segment.
+ */
 const calculateArcCircle = (index0, segments, radius, startAngle0 = 0, angleLength0 = 2 * Math.PI) => {
-	// Add 0.0001 to the possible angle so when start = stop angle, whole circle is drawn
+	// Ensure the start and angle length are within the 0 - 2 * Math.PI range
 	const startAngle = startAngle0 % (2 * Math.PI);
 	const angleLength = angleLength0 % (2 * Math.PI);
+
+	// Calculate the index of the current segment, adjusted to start from 1
 	const index = index0 + 1;
+
+	// Calculate the start and end angles of the arc segment
 	const fromAngle = (angleLength / segments) * (index - 1) + startAngle;
 	const toAngle = (angleLength / segments) * index + startAngle;
-	const fromX = radius * Math.sin(fromAngle);
-	const fromY = -radius * Math.cos(fromAngle);
-	const realToX = radius * Math.sin(toAngle);
-	const realToY = -radius * Math.cos(toAngle);
 
-	// add 0.005 to start drawing a little bit earlier so segments stick together
-	const toX = radius * Math.sin(toAngle + 0.005);
-	const toY = -radius * Math.cos(toAngle + 0.005);
+	// Adjust the start and end angles to fit within the 0 - 2 * Math.PI range
+	const fromAngleAdjusted = fromAngle < 0 ? fromAngle + 2 * Math.PI : fromAngle;
+	const toAngleAdjusted = toAngle < 0 ? toAngle + 2 * Math.PI : toAngle;
 
+	// Calculate the x and y coordinates of the start and end points of the arc segment
+	const fromX = radius * Math.sin(fromAngleAdjusted);
+	const fromY = -radius * Math.cos(fromAngleAdjusted);
+	const realToX = radius * Math.sin(toAngleAdjusted);
+	const realToY = -radius * Math.cos(toAngleAdjusted);
+
+	// Add a small offset to the end point to start drawing a little bit earlier, so that the segments stick together
+	const toX = radius * Math.sin(toAngleAdjusted + 0.005);
+	const toY = -radius * Math.cos(toAngleAdjusted + 0.005);
+
+	// Return an object containing the start and end points of the arc segment
 	return {
 		fromX,
 		fromY,
@@ -74,6 +117,67 @@ const calculateArcCircle = (index0, segments, radius, startAngle0 = 0, angleLeng
 	};
 };
 
+/**
+ * Parses a time string and returns an object with hours and minutes.
+ * @param {string} timeString - The time string to parse (in the format "HH:MM").
+ * @returns {Object} - An object with hours and minutes.
+ */
+const parseTime = (timeString) => {
+	// Split the time string into hours and minutes, and convert them to numbers
+	const [hours, minutes] = timeString.split(':').map(Number);
+
+	// Return an object with the hours and minutes properties
+	return { h: hours, m: minutes };
+};
+
+/**
+ * Calculates the angle between the hour hand and 12 o'clock on an analog clock, based on the given time.
+ * @param {Object} time - An object with hours and minutes properties.
+ * @returns {number} - The angle between the hour hand and 12 o'clock, in radians.
+ */
+const calculateAngleFromTime = (time) => {
+	// Extract the hours and minutes from the time object
+	const { h, m } = time;
+
+	// Calculate the angle based on the hours and minutes
+	let angle = (Math.PI / 12) * (h + m / 60);
+
+	// If the angle is greater than pi radians, subtract 2*pi to make it negative
+	if (angle > Math.PI) {
+		angle -= 2 * Math.PI;
+	}
+
+	// Return the calculated angle
+	return angle;
+};
+
+/**
+ * Calculates the start angle and angle length for a clock face based on the initial start and end times.
+ * @param {string} initialStartTime - The initial start time in the format "HH:MM" (default: "18:00").
+ * @param {string} initialEndTime - The initial end time in the format "HH:MM" (default: "06:00").
+ * @returns {Object} - An object with the start angle and angle length properties.
+ */
+const getInitialAngles = (initialStartTime = '18:00', initialEndTime = '06:00') => {
+	// Parse the initial start and end times into time objects
+	const startTime = parseTime(initialStartTime);
+	const endTime = parseTime(initialEndTime);
+
+	// Calculate the start and end angles based on the time objects
+	const startAngle = calculateAngleFromTime(startTime);
+	const endAngle = calculateAngleFromTime(endTime);
+
+	// Calculate the angle length between the start and end angles
+	let angleLength;
+	if (endAngle >= startAngle) {
+		angleLength = endAngle - startAngle;
+	} else {
+		angleLength = 2 * Math.PI - (startAngle - endAngle);
+	}
+
+	// Return an object with the start angle and angle length properties
+	return { startAngle, angleLength };
+};
+
 const getGradientId = (index) => {
 	return `gradient${index}`;
 };
@@ -82,7 +186,7 @@ export const CircularSlider = (props) => {
 	const {
 		segments = 5,
 		strokeWidth = 40,
-		radius = 145,
+		radius = 180,
 		bgCircleColor = '#171717',
 		gradientColorFrom = '#ff9800',
 		gradientColorTo = '#ffcf00',
@@ -98,16 +202,41 @@ export const CircularSlider = (props) => {
 				{WAKE_ICON}
 			</g>
 		),
+		initialStartTime = '18:00',
+		initialEndTime = '06:00',
 		onUpdate = null,
 		onStartUpdate = null,
 		onEndUpdate = null,
 	} = props;
 
+	useEffect(() => {
+		const { startAngle, angleLength } = getInitialAngles(initialStartTime, initialEndTime);
+		setInitialValues();
+
+		setStartAngle(startAngle);
+		setAngleLength(angleLength);
+	}, [initialStartTime, initialEndTime]);
+
 	const [circleCenterX, setCenterX] = useState(false);
 	const [circleCenterY, setCenterY] = useState(false);
-	const [angleLength, setAngleLength] = useState((Math.PI * 6) / 6);
-	const [startAngle, setStartAngle] = useState((Math.PI * 9) / 6);
+	const [angleLength, setAngleLength] = useState(getInitialAngles(initialStartTime, initialEndTime).angleLength);
+	const [startAngle, setStartAngle] = useState(getInitialAngles(initialStartTime, initialEndTime).startAngle);
+
 	const _circle = useRef(null);
+
+	const setInitialValues = () => {
+		const startTime = parseTime(initialStartTime);
+		const endTime   = parseTime(initialEndTime);
+
+		let durationMinutes = (endTime.h * 60 + endTime.m) - (startTime.h * 60 + startTime.m);
+		if (durationMinutes < 0) {
+			durationMinutes += 24 * 60; // add a full day in minutes
+		}
+
+		if (onUpdate !== null) onUpdate({ startAngle, angleLength, startTime, endTime, durationMinutes });
+		if (onStartUpdate !== null) onStartUpdate({ startAngle, startTime, durationMinutes });
+		if (onEndUpdate !== null) onEndUpdate({ angleLength, endTime, durationMinutes });
+	}
 
 	const setCircleCenter = () => {
 		const { x, y, width, height } = _circle.current.getBoundingClientRect();
@@ -158,6 +287,7 @@ export const CircularSlider = (props) => {
 		const startTime = calculateTimeFromAngle(newAngle);
 		const endTime = calculateTimeFromAngle((newAngle + newAngleLength) % (2 * Math.PI));
 		const durationMinutes = calculateMinutesFromAngle(newAngleLength);
+
 		if (onUpdate !== null) onUpdate({ startAngle: newAngle, angleLength: newAngleLength % (2 * Math.PI), startTime, endTime, durationMinutes });
 		if (onStartUpdate !== null) onStartUpdate({ startAngle: newAngle, startTime, durationMinutes });
 
