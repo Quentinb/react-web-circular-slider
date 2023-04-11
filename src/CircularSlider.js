@@ -59,7 +59,7 @@ const calculateTimeFromAngle = (angle) => {
 	const m = minutes - h * 60;
 
 	// Return an object with the hour and minute formatted as strings with leading zeros if necessary
-	return { h: h === 0 ? '00' : (h < 10 ? '0' + h : h.toString()), m: m < 10 ? '0' + m : m.toString() };
+	return { h: h === 0 ? '00' : h < 10 ? '0' + h : h.toString(), m: m < 10 ? '0' + m : m.toString() };
 };
 
 const calculateArcColor = (index0, segments, gradientColorFrom, gradientColorTo) => {
@@ -226,9 +226,9 @@ export const CircularSlider = (props) => {
 
 	const setInitialValues = () => {
 		const startTime = parseTime(initialStartTime);
-		const endTime   = parseTime(initialEndTime);
+		const endTime = parseTime(initialEndTime);
 
-		let durationMinutes = (endTime.h * 60 + endTime.m) - (startTime.h * 60 + startTime.m);
+		let durationMinutes = endTime.h * 60 + endTime.m - (startTime.h * 60 + startTime.m);
 		if (durationMinutes < 0) {
 			durationMinutes += 24 * 60; // add a full day in minutes
 		}
@@ -236,7 +236,7 @@ export const CircularSlider = (props) => {
 		if (onUpdate !== null) onUpdate({ startAngle, angleLength, startTime, endTime, durationMinutes });
 		if (onStartUpdate !== null) onStartUpdate({ startAngle, startTime, durationMinutes });
 		if (onEndUpdate !== null) onEndUpdate({ angleLength, endTime, durationMinutes });
-	}
+	};
 
 	const setCircleCenter = () => {
 		const { x, y, width, height } = _circle.current.getBoundingClientRect();
@@ -253,24 +253,40 @@ export const CircularSlider = (props) => {
 		e = e || window.event;
 		e.preventDefault();
 
+		// For Browser
 		document.onmouseup = () => {
 			document.onmouseup = null;
 			document.onmousemove = null;
 		};
 
+		// For Mobile Device
+		document.ontouchend = () => {
+			document.ontouchend = null;
+			document.ontouchmove = null;
+		};
+
 		document.onmousemove = handleStartMove;
+		document.ontouchmove = handleStartMove;
 	};
 
 	const handleEndMouseDown = (e) => {
 		e = e || window.event;
 		e.preventDefault();
 
+		// For Browser
 		document.onmouseup = () => {
 			document.onmouseup = null;
 			document.onmousemove = null;
 		};
 
+		// For Mobile
+		document.ontouchend = () => {
+			document.ontouchend = null;
+			document.ontouchmove = null;
+		};
+
 		document.onmousemove = handleEndMove;
+		document.ontouchmove = handleEndMove;
 	};
 
 	const handleStartMove = (e) => {
@@ -278,7 +294,7 @@ export const CircularSlider = (props) => {
 		e.preventDefault();
 
 		const currentAngleStop = (startAngle + angleLength) % (2 * Math.PI);
-		let newAngle = Math.atan2(e.clientY - circleCenterY, e.clientX - circleCenterX) + Math.PI / 2;
+		let newAngle = Math.atan2((e.clientY ?? e.touches[0].clientY) - circleCenterY, (e.clientX ?? e.touches[0].clientX) - circleCenterX) + Math.PI / 2;
 		if (newAngle < 0) newAngle += 2 * Math.PI;
 
 		let newAngleLength = currentAngleStop - newAngle;
@@ -297,9 +313,13 @@ export const CircularSlider = (props) => {
 
 	const handleEndMove = (e) => {
 		e = e || window.event;
-		e.preventDefault();
+		try {
+			e.preventDefault();
+		} catch (error) {
+			// Nothing for now
+		}
 
-		let newAngle = Math.atan2(e.clientY - circleCenterY, e.clientX - circleCenterX) + Math.PI / 2;
+		let newAngle = Math.atan2((e.clientY ?? e.touches[0].clientY) - circleCenterY, (e.clientX ?? e.touches[0].clientX) - circleCenterX) + Math.PI / 2;
 		let newAngleLength = (newAngle - startAngle) % (2 * Math.PI);
 		if (newAngleLength < 0) newAngleLength += 2 * Math.PI;
 
@@ -319,7 +339,7 @@ export const CircularSlider = (props) => {
 
 	useEffect(() => {
 		setCircleCenter();
-	}, []);
+	}, [radius]);
 
 	return (
 		<svg height={containerWidth} width={containerWidth} ref={(circle) => (_circle.current = circle)}>
@@ -352,13 +372,13 @@ export const CircularSlider = (props) => {
 				})}
 
 				{/* Start Icon */}
-				<g fill={gradientColorFrom} transform={`translate(${start.fromX}, ${start.fromY})`} onMouseDown={handleStartMouseDown}>
+				<g fill={gradientColorFrom} transform={`translate(${start.fromX}, ${start.fromY})`} onMouseDown={handleStartMouseDown} onTouchStart={handleStartMouseDown}>
 					<circle r={(strokeWidth - 1) / 2} fill={bgCircleColor} stroke={gradientColorFrom} strokeWidth="1" />
 					{startIcon}
 				</g>
 
 				{/* Stop Icon */}
-				<g fill={gradientColorTo} transform={`translate(${stop.toX}, ${stop.toY})`} onMouseDown={handleEndMouseDown}>
+				<g fill={gradientColorTo} transform={`translate(${stop.toX}, ${stop.toY})`} onMouseDown={handleEndMouseDown} onTouchStart={handleEndMouseDown}>
 					<circle r={(strokeWidth - 1) / 2} fill={bgCircleColor} stroke={gradientColorTo} strokeWidth="1" />
 					{stopIcon}
 				</g>
