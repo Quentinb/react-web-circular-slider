@@ -1,6 +1,6 @@
 {
 	"name": "react-web-circular-slider",
-	"version": "2.0.10",
+	"version": "2.0.12",
 	"description": "ReactJS component for creating circular slider",
 	"main": "dist/CircularSlider.js",
 	"repository": {
