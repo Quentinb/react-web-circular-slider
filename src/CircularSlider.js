@@ -262,11 +262,11 @@ export const CircularSlider = (props) => {
 		// For Mobile Device
 		document.ontouchend = () => {
 			document.ontouchend = null;
-			document.ontouchmove = null;
+			document.removeEventListener('touchmove', handleStartMove);
 		};
 
 		document.onmousemove = handleStartMove;
-		document.ontouchmove = handleStartMove;
+		document.addEventListener('touchmove', handleStartMove, { passive: false });
 	};
 
 	const handleEndMouseDown = (e) => {
@@ -282,11 +282,11 @@ export const CircularSlider = (props) => {
 		// For Mobile
 		document.ontouchend = () => {
 			document.ontouchend = null;
-			document.ontouchmove = null;
+			document.removeEventListener('touchmove', handleEndMove);
 		};
 
 		document.onmousemove = handleEndMove;
-		document.ontouchmove = handleEndMove;
+		document.addEventListener('touchmove', handleEndMove, { passive: false });
 	};
 
 	const handleStartMove = (e) => {
